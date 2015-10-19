@@ -1,0 +1,15 @@
+<div ng-controller='QuestionController'>
+	<!-- <input type="submit" value="Cancel" ng-click="goHome()" / -->
+	<a href="#/">Return to Home/Logout</a>
+	<h4>Hi, {{ new_user }}!</h4>
+	<p>Choose answer for each of the questions and submit the test once done.  Good Luck!</p>
+	<form>
+		<div data-ng-repeat="question in questions | orderBy:date | limitTo: 3">
+			<h3 ng-bind="question.question"></h3>
+			<p><input type="radio" data-ng-model="answer.correct" data-ng-value="true"><span ng-bind="question.answer"></p>
+			<p><input type="radio" data-ng-model="answer.incorrect" data-ng-value="false"><span ng-bind="question.fake1"></p>
+			<p><input type="radio" data-ng-model="answer.incorrect" data-ng-value="false"><span ng-bind="question.fake2"></p>
+		</div>
+		<input type="submit" ng-click="submitQuiz()">
+	</form>
+			

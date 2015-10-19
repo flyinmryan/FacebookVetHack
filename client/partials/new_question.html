@@ -1,0 +1,11 @@
+<div ng-controller="UsersController">
+	<input type="submit" value="Home" ng-click="toHome()" />
+	<h1>New Question</h1>
+	<form>
+		Question: <textarea ng-model="new_question.question" cols="80" rows="4"></textarea>
+		Correct Answer: <input type="text" ng-model="new_question.answer">
+		Fake Answer1: <input type="text" ng-model="new_question.fake1">
+		Fake Answer2: <input type="text" ng-model="new_question.fake2">
+		<input ng-click="addQuestion()" type="submit" value="Add Question">
+	</form>
+	<input type="submit" value="Cancel" ng-click="toHome()" />

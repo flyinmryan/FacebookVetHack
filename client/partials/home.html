@@ -1,0 +1,19 @@
+<div ng-controller="UsersController">
+	<input type="submit" value="Add a Question" ng-click="new_question()">
+	<input type="submit" value="Logout" ng-click="logout()">
+	<div>
+		<input type="submit" value="Play!" ng-click="toGame()">
+	</div>
+	Search Results: <input type="text" ng-model="filter_score">
+	<table style="border: 2px solid black">
+		<tr>
+			<th>Name</th>
+			<th>Score</th>
+			<th>Percentage</th>
+		</tr>
+		<tr ng-repeat="score in scores | filter: filter_score | orderBy: date">
+			<td ng-bind='score.name'></td>
+			<td ng-bind='score.score'></td>
+			<td ng-bind='score.percentage'></td>
+		</tr>
+	</table>

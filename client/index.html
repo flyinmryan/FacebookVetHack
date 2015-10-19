@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+	<meta charset="utf-8">
+	<title>Trivia Game</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-route.min.js"></script>
+	<script type="text/javascript">
+	var users = angular.module('myApp', ['ngRoute']);
+	  users.config(function ($routeProvider){
+	    $routeProvider
+	    .when('/',{
+	        templateUrl: 'partials/home.html'
+	    })
+	    .when('/lets_play',{
+	    	templateUrl: 'partials/lets_play.html'
+	    })
+	    .when('/new_question', {
+	        templateUrl: "partials/new_question.html"
+	    });
+	  });
+
+	  users.controller("QuestionController", function ($scope, $location, UserFactory, $routeParams){
+	  	UserFactory.getQuestions(function (data){
+		  			//console.log("line 40", data);
+		  			$scope.questions = data;
+		  			$scope.new_user = UserFactory.current_user;
+		  			//console.log($scope.questions);
+		  		});
+		  	$scope.submitQuiz = function(answer){
+		  		// console.log($scope);
+		  		console.log(answer);
+		  	};
+	  	});
+	  	// $scope.goHome = function(){
+	  	// 	UserFactory.getResults(function (data){
+			 //    $scope.scores = data;
+			 //    $scope.new_user = UserFactory.current_user;
+			 //  });
+	  	// };
+
+	  users.controller('UsersController', function ($scope, $location, UserFactory, $routeParams){
+	  		if(UserFactory.current_user === null){
+					var newUser = prompt("Let's play!  What is your name?");
+					UserFactory.current_user = newUser;
+					$scope.new_user = {name: newUser};
+				} else {
+					$scope.current_user = UserFactory.current_user;
+				}
+
+		    UserFactory.getResults(function (data){
+			    $scope.scores = data;
+			    $scope.new_user = UserFactory.current_user;
+			  });
+	  	
+		  	$scope.toGame = function(){
+		  		$scope.new_user = UserFactory.current_user;
+		  		console.log($scope.current_user);
+		  		UserFactory.getQuestions(function (data){
+		  			//console.log("line 40", data);
+		  			$scope.questions = data;
+		  			console.log($scope.questions);
+		  		});
+		  		$location.path('/lets_play');
+		  	};
+
+		  	$scope.logout = function(){
+		  		UserFactory.current_user = null;
+		  		$location.path('/');
+		  	};
+
+		  	$scope.toHome = function(){
+		  		UserFactory.getResults(function (data){
+				    $scope.scores = data;
+				    $scope.new_user = UserFactory.current_user;
+				  });
+		  	};
+
+		  	$scope.new_question = function(){
+		  		$scope.current_user = UserFactory.current_user;
+		  		$location.path('/new_question');
+		  	};
+
+			  $scope.addQuestion = function(){
+				  	//console.log(UserFactory.current_user);
+			      var repack = {name: UserFactory.current_user, 
+	  				question: $scope.new_question.question,
+	  				answer: $scope.new_question.answer,
+	  				fake1: $scope.new_question.fake1,
+	  				fake2: $scope.new_question.fake2
+	  			};
+	      	console.log(repack);
+	      	UserFactory.addQuestion(repack, function (data){
+	        	UserFactory.getResults(function (data){
+	          $scope.new_question = {};
+	          alert("Your question was added succesfully!");
+	          $location.path('/');
+	        });
+	      });
+	    };
+
+	//     $scope.deleteAppt = function(name){
+	//     	console.log(name);
+	//     	UserFactory.deleteAppt(name, function (data){
+	//     		$scope.patients = data;
+	//     	});
+	//     };
+	}); //End of users.controller
+
+	users.factory('UserFactory', function ($http){
+    var factory = {};
+    var current_user=[];
+
+    factory.current_user = null;
+
+    factory.getResults = function(callback){
+      $http.get('/getResults').success(function (output){     	
+          callback(output);
+      });
+    };
+
+    factory.addQuestion = function (data,callback){
+    	console.log(data);
+      $http.post('/addQuestion', data).success(function (output){
+        callback(output);
+      });
+  	};
+
+  	factory.getQuestions = function (callback){
+  		$http.get('getQuestions').success(function (output){
+  			callback(output);
+  		});
+  	};
+
+	  	
+	//   	factory.register = function(info,callback){
+	//       //console.log(info);
+	//       $http.post('/register',info).success(function(output){
+	//           current_user.push(output);
+	//           //console.log(current_user);
+	//           callback(output);
+	//       });        
+	//   	};
+
+	//   	factory.deleteAppt = function (data, callback){
+	//   		console.log(data);
+	//   		$http.post('/deleteAppt', {_id: data}).success(function (output){
+	//   			console.log(output);
+	//   			callback(output);
+	//   		});
+	//   	};
+  		return factory;
+    }); 
+    //End of users.factory
+	</script>
+</head>
+<body>
+	<div ng-view=''>
+		
+	</div>
+</body>
+</html>
